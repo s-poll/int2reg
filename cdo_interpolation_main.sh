@@ -346,7 +346,7 @@ if [[ $l_gme == 1 ]]; then
     
     /bin/csh -c "ncl_convert2nc "$fname_out".grb" -i $path_out"/"$pmodel"/ -o $path_out"/""
     echo "if error occure, do the following command manuelly in the task"
-    echo "ncl_convert2nc "$fname_out".grb" -i $path_out"/" -o $path_out"/""
+    echo "ncl_convert2nc "$fname_out".grb" -i $path_out"/" -o $path_out"/"
     echo "delete if poosible the "$fname_out".grb file in "$path_out"/"$pmodel
     
     
