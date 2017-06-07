@@ -7,13 +7,10 @@
 ### The script need the following programs:
 ### cdo, nco (CDE,CEU)
 ###
-### Run the script: 
+### Usage: 
 ### ./cdo_interpolation_meso.sh
 ###
 #############################
-
-#source ~/.cshrc
-#source ~/.bashrc
 
 ##############
 # Section 1: 
@@ -32,14 +29,13 @@
 l_les156=0
 l_les312=0
 l_les624=0
-l_cde=1
+l_cde=0
 l_ceu=0
-l_gme=0
+l_gme=1
 
 # path of data and output
  path='/automount/cluma06/hdcp2/analyses/'
- path_out='/automount/ags/s6stpoll/PHD_data/model_interpolated'
-
+ path_out='/automount/user/pshrestha/'
 
 # for icon LAI_GDS10_SFC_13 (special lai for gme)
 l_mistral=0 # if running script on mistral
@@ -54,9 +50,9 @@ ext_name='rad2deg'
 # time 
 #(if ncl_convert2nc does not work, you have start the script for each time step)
 date='20130424' # yyyymmdd
-hrsta=12 
-hrend=12
-hrinc=2 # increament
+hrsta=0 
+hrend=24
+hrinc=3 # increament
  
 ##############
 # Section 2: 
@@ -342,14 +338,10 @@ if [[ $l_gme == 1 ]]; then
     echo "cdo remapdis,$grid_file $path"/"$pmodel"/"$fname $path_out"/"$fname_out"
     cdo remapdis,$grid_file $path"/"$pmodel"/"$fname $path_out"/"$fname_out".grb"
     
-    # ncl_convert2nc do not work in the script but in the console!!! (start script copy code and start script 2.time)
-    
-    /bin/csh -c "ncl_convert2nc "$fname_out".grb" -i $path_out"/"$pmodel"/ -o $path_out"/""
-    echo "if error occure, do the following command manuelly in the task"
-    echo "ncl_convert2nc "$fname_out".grb" -i $path_out"/" -o $path_out"/"
-    echo "delete if poosible the "$fname_out".grb file in "$path_out"/"$pmodel
-    
-    
+    # convert to netcdf
+    ncl_convert2nc ${path_out}"/"${fname_out}".grb"
+    mv ${fname_out}".nc" ${path_out}
+    rm ${path_out}"/"${fname_out}".grb"
 fi
 
 ##########
