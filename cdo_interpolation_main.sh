@@ -19,19 +19,19 @@
     
 # location
 # juelich
- lonsta=5.1 # lon start
- latsta=50.0 # lat start
- lonend=7.7 # lon end
- latend=51.8 # lat end
+ lonsta=4.8 #5.1 # lon start
+ latsta=45.3 #50.0 # lat start
+ lonend=15.6 #7.7 # lon end
+ latend=55.3 # lat end
 
 # model choice
 # only one model per execution
 l_les156=0
 l_les312=0
 l_les624=0
-l_cde=0
+l_cde=1
 l_ceu=0
-l_gme=1
+l_gme=0
 
 # path of data and output
  path='/automount/cluma06/hdcp2/analyses/'
@@ -311,13 +311,9 @@ fi
 
 if [ $l_cde == 1 ] || [ $l_ceu == 1 ]; then
     
-    # ncl_convert2nc do not work in the script but in the console!!! (start script copy code and start script 2.time)
-    
-    #    /bin/csh -c "ncl_convert2nc "$fname".grb" -i $path"/"$pmodel"/ -o $path_out"/""
-    ncl_convert2nc "$fname".grb" -i $path"/"$pmodel"/ -o $path_out"/"
-    echo "if error occure, do the following command manuelly in the task"
-    echo "ncl_convert2nc "$fname".grb" -i $path"/"$pmodel"/ -o $path_out"/""
-    
+    ncl_convert2nc $path"/"$pmodel"/"${fname}".grb"
+    mv ${fname}".nc" ${path_out}
+
     # select variables because some variables causes error in the transformation    
     echo "cdo select"
     cdo select,name=$mvar $path_out"/"$fname".nc" $path_out"/temporary_int2reg_file.nc"
