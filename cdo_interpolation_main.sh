@@ -19,18 +19,18 @@
     
 # location
 # juelich
- lonsta=4.8 #5.1 # lon start
- latsta=45.3 #50.0 # lat start
- lonend=15.6 #7.7 # lon end
- latend=55.3 # lat end
+ lonsta=4.5 #5.1 # lon start
+ latsta=47.6 #50.0 # lat start
+ lonend=14.5 #7.7 # lon end
+ latend=54.6 # lat end
 
 # model choice
 # only one model per execution
 l_les156=0
 l_les312=0
 l_les624=0
-l_cde=1
-l_ceu=0
+l_cde=0
+l_ceu=1
 l_gme=0
 
 # path of data and output
@@ -44,7 +44,7 @@ l_grid=0
  
  
 # 
-domain_name='juelich_test'
+domain_name='GERMANY'
 ext_name='rad2deg'
 
 # time 
@@ -52,7 +52,7 @@ ext_name='rad2deg'
 date='20130424' # yyyymmdd
 hrsta=0 
 hrend=24
-hrinc=3 # increament
+hrinc=1 # increament
  
 ##############
 # Section 2: 
@@ -181,6 +181,8 @@ if [[ $l_cde == 1 ]]; then
     # model input
     pmodel='cde'
     fname='laf'$date$hr
+
+    echo "Processing : " $pmodel " "  $fname 
     
     # model output (interpolated)
     pmodel_out='cde_2800m'
@@ -198,7 +200,8 @@ if [[ $l_ceu == 1 ]]; then
     # model input
     pmodel='ceu'
     fname='laf'$date$hr
-    
+   
+    echo "Processing : " $pmodel " "  $fname  
     # model output (interpolated)
     pmodel_out='ceu_7000m'
     fname_out=$pmodel_out'_'$date$hr'00_'$domain_name'_'$ext_name'.nc'
@@ -220,7 +223,8 @@ if [[ $l_gme == 1 ]]; then
 #    fname='gaf'$date$hr # depend on which data were downloading
     fname='giff'$date$hr
 #    fname='invar.i384a.2012022900' # to extract external files
-    
+
+    echo "Processing : " $pmodel " "  $fname     
     # model output (interpolated)
     pmodel_out='gme_20000m'
     fname_out=$pmodel_out'_'$date$hr'00_'$domain_name'_'$ext_name''
@@ -311,7 +315,7 @@ fi
 
 if [ $l_cde == 1 ] || [ $l_ceu == 1 ]; then
     
-    ncl_convert2nc $path"/"$pmodel"/"${fname}".grb"
+    ncl_convert2nc $path"/"$pmodel"/"${fname}".grb" -B
     mv ${fname}".nc" ${path_out}
 
     # select variables because some variables causes error in the transformation    
@@ -335,7 +339,7 @@ if [[ $l_gme == 1 ]]; then
     cdo remapdis,$grid_file $path"/"$pmodel"/"$fname $path_out"/"$fname_out".grb"
     
     # convert to netcdf
-    ncl_convert2nc ${path_out}"/"${fname_out}".grb"
+    ncl_convert2nc ${path_out}"/"${fname_out}".grb" -B
     mv ${fname_out}".nc" ${path_out}
     rm ${path_out}"/"${fname_out}".grb"
 fi
