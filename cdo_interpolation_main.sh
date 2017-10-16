@@ -21,16 +21,17 @@
  l_mistral=1
    
 # output directory
- dir_out='/work/bm0982/b380388/icon_postproc/icon_interpolated/test'
+# dir_out='/work/bm0982/b380388/icon_postproc/icon_interpolated/test'
+ dir_out='/automount/cluma06/hdcp2/s6stpoll/interpolated'
  add_name_out='merge_test'
  
 # model choice
 # only one model per execution
 l_les156=0
 l_les312=0
-l_les624=1
+l_les624=0
 l_cde=0
-l_ceu=0
+l_ceu=1
 l_gme=0
 l_echam_tamip=0  # not completely implemented until now, hrsta and hrend should be the same. all timesteps are proceed in one step
 l_icon_tamip=0   # not completely implemented until now, hrsta and hrend should be the same. all timesteps are proceed in one step
@@ -69,6 +70,8 @@ area=('nrw_downscale')
 # if choosen icon restart files, please choose level. 1/151 for all levels
  lay_rest3d='80/151'
 
+# path to COSMO/GME data
+  dir_cosmo='/automount/cluma06/hdcp2/analyses/'
 # choose variables for COSMO
   mvar="T_GDS10_HYBY_13,U_GDS10_HYBY_13,V_GDS10_HYBY_13,VERT_VEL_GDS10_HYBL_13,QV_GDS10_HYBY_13,PS_GDS10_GPML_13,LAI_GDS10_SFC_13,GEOMET_H_GDS10_HYBL_13,T_GDS10_HYBY_13,PS_GDS10_HYBY_13,ASHFL_S_GDS10_SFC_13,ALHFL_S_GDS10_SFC_13,GEOMET_H_GDS10_SFC_13,CLCT_GDS10_SFC_13,CLCL_GDS10_SFC_13,ASOB_S_GDS10_SFC_13,ATHB_S_GDS10_SFC_13,ALB_RAD_GDS10_SFC_13"
 
@@ -353,6 +356,7 @@ if [[ $l_cde == 1 ]]; then
 
     # model output (interpolated)
     pmodel_out='cde_2800m'
+    path_out=$dir_out'/'$date
     fname_out=$pmodel_out'_'$date$hr'00_'$domain_name'_'$ext_name'.nc'
 
     # mesh size (native resolution)
@@ -368,6 +372,7 @@ if [[ $l_ceu == 1 ]]; then
 
     # model output (interpolated)
     pmodel_out='ceu_7000m'
+    path_out=$dir_out'/'$date
     fname_out=$pmodel_out'_'$date$hr'00_'$domain_name'_'$ext_name'.nc'
 
     # mesh size (native resolution)
@@ -385,6 +390,7 @@ if [[ $l_gme == 1 ]]; then
 
     # model output (interpolated)
     pmodel_out='gme_20000m'
+    path_out=$dir_out'/'$date
     fname_out=$pmodel_out'_'$date$hr'00_'$domain_name'_'$ext_name''
 
     # mesh size
@@ -403,7 +409,7 @@ if [[ $l_echam_tamip == 1 ]]; then
 
     path_defout='/work/bm0834/HDCP2_TAMIP/ECHAM/trc0101/trc0101.'$date
 
-    path_out='/work/bm0982/b380388/icon_postproc/icon_interpolated/germanwide/'$date
+    path_out=$dir_out'/'$date
     pmodel_out='echam_40000m'
 
     fname_out=$pmodel_out'_2dvar_'$date$hr'00_'$domain_name'.nc'
@@ -418,7 +424,7 @@ if [[ $l_icon_tamip == 1 ]]; then
 
     path_defout='/work/bm0834/HDCP2_TAMIP/ICON_NWP/'$date
 
-    path_out='/work/bm0982/b380388/icon_postproc/icon_interpolated/germanwide/'$date
+    path_out=$dir_out'/'$date
     pmodel_out='icon_40000m'
 
     fname_out=$pmodel_out'_2dvar_'$date$hr'00_'$domain_name'.nc'
@@ -585,7 +591,6 @@ if [ "$l_les156" == "1" ] || [ "$l_les312" == "1" ]||[ "$l_les624" == "1" ]; the
  fi
 
   echo "merge data"
-#  cdo -O -P 24 merge $path_out'/restart_2d_reglonlat.nc' $path_out'/restart_3d_reglonlat.nc' $path_out"/2dsurf_reglonlat.nc" $path_out'/2dcloud_reglonlat.nc' $path_out'/'$fname_out
   cdo -O -P 24 merge $merging_files $path_out'/'$fname_out
 
   # delete unessesary file
@@ -616,7 +621,7 @@ fi # if  external
 
 if [ $l_cde == 1 ] || [ $l_ceu == 1 ]; then
 
-    ncl_convert2nc $path"/"$pmodel"/"${fname}".grb" -B
+    ncl_convert2nc $dir_cosmo"/"$pmodel"/"${fname}".grb" -B
     mv ${fname}".nc" ${path_out}
  
   # select variables because some variables causes error in the transformation    
@@ -637,7 +642,7 @@ fi
  if [[ $l_gme == 1 ]]; then
      
      # interpolation
-     echo "cdo remap$interpm,$grid_file $path"/"$pmodel"/"$fname $path_out"/"$fname_out"
+     echo "cdo remap$interpm,$grid_file $dir_cosmo"/"$pmodel"/"$fname $path_out"/"$fname_out"
      cdo remap$interpm,$grid_file $path"/"$pmodel"/"$fname $path_out"/"$fname_out".grb"
      
      # convert to netcdf
