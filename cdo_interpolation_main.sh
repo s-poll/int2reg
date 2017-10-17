@@ -182,6 +182,12 @@ for iarea in ${area[@]}
 #  Loop over hours
 ##############
 
+# elimate loop over hours, where not needed
+if [ $l_grid == 1 ] || [ $l_external == 1 ] || [ $l_echam_tamip == 1 ] ||  [ $l_icon_tamip == 1 ]; then
+  hrsta=0
+  hrend=0
+fi
+
 for ihr in $(seq ${hrsta} ${hrinc} ${hrend})
   do
 
@@ -582,6 +588,7 @@ if [ "$l_les156" == "1" ] || [ "$l_les312" == "1" ]||[ "$l_les624" == "1" ]; the
  if [ ! $var_cloud2d == '' ];then
    echo "interpolate 2d Cloud"
    cdo -O -P 24 remap,$grid_file,$path_out'/../'$pmodel_out'_weights2d_'$domain_name'_'$s_interp'.nc' -sellonlatbox,$lonsta,$lonend,$latsta,$latend -setgrid,$fname_grid -selvar,$var_cloud2d $les_postproc $path_defout"/"$fname_2dcloud $path_out'/2dcloud_reglonlat.nc'
+   merging_files=$merging_files' '$path_out'/2dcloud_reglonlat.nc'
  fi
 
  if [ ! $var_rad2d == '' ];then
